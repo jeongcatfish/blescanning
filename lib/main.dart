@@ -36,6 +36,7 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     getServerData();
+    context.read<LocationVariable>().initData();
     Future.delayed(const Duration(milliseconds: 1000),(){
       context.read<BleScan>().setScanStarted();
       context.read<BleScan>().startScan();
@@ -50,6 +51,9 @@ class _HomePageState extends State<HomePage> {
 
   void _onItemTapped(int index) {
     setState(() {
+      if(index == 1){
+        context.read<LocationVariable>().setDataRight();
+      }
       _selectedIndex = index;
     });
   }
@@ -140,6 +144,9 @@ class SettingView extends StatelessWidget {
 
   final double buttonPadding = 15;
   final Color buttonColor = Colors.green;
+  final double modalTitleFontSize = 20;
+  final double modalDescFontSize = 15;
+
 
   @override
   Widget build(BuildContext context) {
@@ -254,6 +261,50 @@ class SettingView extends StatelessWidget {
             Text("phone_idx"),
           ],
         ),
+        Container(
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(primary: Colors.green),
+            child: SizedBox(child:
+              Center(child:
+                Text("apply", style: TextStyle(fontSize: 20),)),height: 50, width: 70,),
+            onPressed: (){
+              showDialog(
+                context: context,
+                builder: (context){
+                  return Dialog(
+                    child: Container(
+                      height: 300,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          SizedBox(height: 50,
+                              child: Text("변경사항",style: TextStyle(fontSize: modalTitleFontSize,fontWeight: FontWeight.bold),)),
+                          Text("placeIdx ${context.watch<LocationVariable>().oldSectionIdx} -> ${context.watch<LocationVariable>().sectionIdx}",style: TextStyle(fontSize: modalDescFontSize)),
+                          Text("placeIdx ${context.watch<LocationVariable>().oldPlaceIdx} -> ${context.watch<LocationVariable>().placeIdx}",style: TextStyle(fontSize: modalDescFontSize)),
+                          Text("placeIdx ${context.watch<LocationVariable>().oldPhoneIdx} -> ${context.watch<LocationVariable>().phoneIdx}",style: TextStyle(fontSize: modalDescFontSize)),
+                          Container(
+                            child: Row(
+                               mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Container(child: ElevatedButton(style: ElevatedButton.styleFrom(primary: Colors.red),onPressed: (){
+                                  Navigator.pop(context);
+                                }, child: Text("취소")),margin: EdgeInsets.all(10),),
+                                Container(child: ElevatedButton(style: ElevatedButton.styleFrom(primary: Colors.green),onPressed: (){
+                                  context.read<LocationVariable>().setStorageData();
+                                  Navigator.pop(context);
+                                }, child: Text("확인")),margin: EdgeInsets.all(10),),
+                              ],
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              );
+            },
+          ),
+        )
       ],
     );
   }
