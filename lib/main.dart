@@ -1,11 +1,13 @@
 import 'dart:async';
 import 'dart:io' show Platform;
+import 'package:blescanning/pages/BeaconListPage.dart';
+import 'package:blescanning/pages/SecondPage.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
 import 'package:blescanning/provider/bleScanProvider.dart';
 import 'package:blescanning/provider/locationVariableProvider.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
-import 'package:permission_handler/permission_handler.dart';
-import 'package:provider/provider.dart';
+import 'package:blescanning/provider/requestServerProvider.dart';
 
 void main() {
   return runApp(
@@ -13,6 +15,7 @@ void main() {
       providers: [
         ChangeNotifierProvider(create: (c) => BleScan()),
         ChangeNotifierProvider(create: (c) => LocationVariable()),
+        ChangeNotifierProvider(create: (c) => RequestServer()),
       ],
         child: MaterialApp(home: HomePage())),
   );
@@ -27,14 +30,24 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
+  Map my_map = {};
+
   @override
   void initState() {
     super.initState();
+    getServerData();
     Future.delayed(const Duration(milliseconds: 1000),(){
       context.read<BleScan>().setScanStarted();
       context.read<BleScan>().startScan();
     });
   }
+
+  getServerData() async{
+    var beaconList= await context.read<RequestServer>().getHttp();
+    await context.read<RequestServer>().getWorkerBeacon();
+    await context.read<RequestServer>().getBeaconList();
+  }
+
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
@@ -62,6 +75,39 @@ class _HomePageState extends State<HomePage> {
         currentIndex: _selectedIndex,
         selectedItemColor: Colors.amber[800],
         onTap: _onItemTapped,
+      ),
+      drawer: Drawer(
+        // Add a ListView to the drawer. This ensures the user can scroll
+        // through the options in the drawer if there isn't enough vertical
+        // space to fit everything.
+        child: ListView(
+          // Important: Remove any padding from the ListView.
+          padding: EdgeInsets.zero,
+          children: [
+            const DrawerHeader(
+              decoration: BoxDecoration(
+                color: Colors.green,
+              ),
+              child: Text('Drawer Header'),
+            ),
+            ListTile(
+              title: const Text('data'),
+              onTap: () {
+                Navigator.push(context,MaterialPageRoute(builder: (c)=>SecondPage()));
+              },
+            ),
+            ListTile(
+              title: const Text('Beacon List'),
+              onTap: () {
+                Navigator.push(context,MaterialPageRoute(builder: (c)=>BeaconListPage()));
+              },
+            ),
+          ],
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: (){context.read<BleScan>().clearDeviceList();},
+        child: Icon(Icons.replay_outlined),
       ),
     );
   }
@@ -223,11 +269,15 @@ class BleListView extends StatelessWidget {
     return ListView.builder(
       itemCount: context.watch<BleScan>().deviceList.length,
       itemBuilder: (context, index) {
-        return ListTile(
-          //디바이스 이름과 맥주소 그리고 신호 세기를 표시한다.
-          title: Text((index+1).toString()+"    " + context.watch<BleScan>().deviceList[index].name),
-          subtitle: Text(context.watch<BleScan>().deviceList[index].macAddress),
-          trailing: Text("${context.watch<BleScan>().deviceList[index].rssi}"),
+        return Card(
+          elevation: 3,
+          child: ListTile(
+            //디바이스 이름과 맥주소 그리고 신호 세기를 표시한다.
+            leading: CircleAvatar(child: Icon(Icons.bluetooth),),
+            title: Text((index+1).toString()+"    " + context.watch<BleScan>().deviceList[index].name),
+            subtitle: Text(context.watch<BleScan>().deviceList[index].macAddress),
+            trailing: Text("${context.watch<BleScan>().deviceList[index].rssi}"),
+          ),
         );
       },
     );

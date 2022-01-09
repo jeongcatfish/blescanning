@@ -18,6 +18,10 @@ class BleScan extends ChangeNotifier{
     scanStarted = !scanStarted;
     notifyListeners();
   }
+  clearDeviceList(){
+    deviceList.clear();
+    notifyListeners();
+  }
 
   void startScan() async {
     bool permGranted = false;
