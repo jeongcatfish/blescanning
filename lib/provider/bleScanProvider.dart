@@ -3,6 +3,7 @@ import 'dart:io' show Platform;
 import 'package:flutter/material.dart';
 import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:intl/intl.dart';
 
 class BleScan extends ChangeNotifier{
   List<BleDevice> deviceList = [];
@@ -13,7 +14,6 @@ class BleScan extends ChangeNotifier{
   late StreamSubscription<DiscoveredDevice> _scanStream;
   // These are the UUIDs of your device
   final Uuid serviceUuid = Uuid.parse("75C276C3-8F97-20BC-A143-B354244886D4");
-
   setScanStarted(){
     scanStarted = !scanStarted;
     notifyListeners();
@@ -37,6 +37,11 @@ class BleScan extends ChangeNotifier{
     if (permGranted) {
       _scanStream = flutterReactiveBle
           .scanForDevices(withServices: [], scanMode: ScanMode.lowLatency).listen((device) {
+            print("mac : ${device.id} name : ${device.name}");
+            var now = DateTime.now();
+            var formatter = DateFormat('yyyy-MM-dd hh:mm:ss');
+            String formatted = formatter.format(now);
+            print(formatted);
             scanList(device);
       });
     }
