@@ -122,7 +122,10 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: (){context.read<BleScan>().clearDeviceList();},
+        onPressed: (){
+          context.read<BleScan>().clearDeviceList();
+          context.read<BleScan>().startScan();
+          },
         child: Icon(Icons.replay_outlined),
       ),
     );

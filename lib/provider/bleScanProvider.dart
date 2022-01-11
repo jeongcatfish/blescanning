@@ -53,6 +53,10 @@ class BleScan extends ChangeNotifier{
               endTime = getTime();
             }
             scanList(device);
+      },
+      onDone: (){
+            print("ONDONE CALLED ONDONE CALLED ONDONE CALLED");
+            scanStarted = false;
       });
     }
   }
