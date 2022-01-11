@@ -38,7 +38,7 @@ class _HomePageState extends State<HomePage> {
     getServerData();
     context.read<LocationVariable>().initData();
     Future.delayed(const Duration(milliseconds: 1000),(){
-      context.read<BleScan>().setScanStarted();
+      // context.read<BleScan>().setScanStarted();
       context.read<BleScan>().startScan();
     });
   }
@@ -60,7 +60,19 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("FLUTTER BLE SCANNER"),backgroundColor: Colors.green,),
+      appBar: AppBar(title: Text("FLUTTER BLE SCANNER"),backgroundColor: Colors.green,
+      actions: [
+        IconButton(onPressed: (){
+          context.read<BleScan>().scanStream.pause();
+          }, icon: Icon(Icons.pause)),
+        IconButton(onPressed: (){
+          context.read<BleScan>().scanStream.resume();
+          }, icon: Icon(Icons.play_arrow)),
+        IconButton(onPressed: (){
+          print(context.read<BleScan>().scanStream.isPaused.toString());
+          context.read<BleScan>().setIsScanPaused(context.read<BleScan>().scanStream.isPaused);
+          }, icon: Icon(Icons.info))
+      ],),
 
       backgroundColor: Colors.white,
       body: [HomeView(),SettingView()][_selectedIndex],
@@ -126,8 +138,15 @@ class HomeView extends StatelessWidget {
       children: [
         Container(
           padding: EdgeInsets.all(30),
-          child: Text("TOTAL COUNT : ${context.watch<BleScan>().deviceList.length.toString()}",
-            style: TextStyle(fontSize: 30,fontWeight: FontWeight.bold),),
+          child: Column(
+            children: [
+              Text("TOTAL COUNT : ${context.watch<BleScan>().deviceList.length.toString()}",
+                style: TextStyle(fontSize: 30,fontWeight: FontWeight.bold),),
+              Text("IsPaused : ${context.watch<BleScan>().IsScanPaused.toString()}",style: TextStyle(fontSize: 25,fontWeight: FontWeight.bold),),
+              Text(context.watch<BleScan>().startTime.toString()),
+              Text(context.watch<BleScan>().endTime.toString())
+            ],
+          ),
         ),
         Expanded(
           child: Container(

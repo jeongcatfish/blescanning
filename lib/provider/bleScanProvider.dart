@@ -9,9 +9,11 @@ class BleScan extends ChangeNotifier{
   List<BleDevice> deviceList = [];
   // Some state management stuff
   bool scanStarted = false;
+  bool IsScanPaused = false;
+  var startTime,endTime;
   // Bluetooth related variables
   final flutterReactiveBle = FlutterReactiveBle();
-  late StreamSubscription<DiscoveredDevice> _scanStream;
+  late StreamSubscription<DiscoveredDevice> scanStream;
   // These are the UUIDs of your device
   final Uuid serviceUuid = Uuid.parse("75C276C3-8F97-20BC-A143-B354244886D4");
   setScanStarted(){
@@ -20,6 +22,11 @@ class BleScan extends ChangeNotifier{
   }
   clearDeviceList(){
     deviceList.clear();
+    notifyListeners();
+  }
+
+  setIsScanPaused(status){
+    IsScanPaused = status;
     notifyListeners();
   }
 
@@ -35,18 +42,27 @@ class BleScan extends ChangeNotifier{
     }
     // Main scanning logic happens here ⤵️
     if (permGranted) {
-      _scanStream = flutterReactiveBle
+      scanStream = flutterReactiveBle
           .scanForDevices(withServices: [], scanMode: ScanMode.lowLatency).listen((device) {
-            print("mac : ${device.id} name : ${device.name}");
-            var now = DateTime.now();
-            var formatter = DateFormat('yyyy-MM-dd hh:mm:ss');
-            String formatted = formatter.format(now);
-            print(formatted);
+            // print("mac : ${device.id} name : ${device.name}");
+            if(!scanStarted){
+              scanStarted = true;
+              startTime = getTime();
+            }
+            else{
+              endTime = getTime();
+            }
             scanList(device);
       });
     }
   }
-
+  getTime(){
+    var now = DateTime.now();
+    var formatter = DateFormat('yyyy-MM-dd hh:mm:ss');
+    String formatted = formatter.format(now);
+    formatted = formatted.substring(11,formatted.length);
+    return formatted;
+  }
   scanList(device){
     var findMacAddress = deviceList.any((el){
       if(el.macAddress == device.id.toString()){
