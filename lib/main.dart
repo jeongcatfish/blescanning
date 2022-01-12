@@ -43,8 +43,12 @@ class _HomePageState extends State<HomePage> {
       });
       if(bleScanTime >= bleScanTimeOut){
         bleScanTime = 0;
-        context.read<BleScan>().clearDeviceList();
-        context.read<BleScan>().startScan();
+        // context.read<BleScan>().clearDeviceList();
+        // context.read<BleScan>().startScan();
+        context.read<BleScan>().scanStream.pause();
+        Future.delayed(const Duration(milliseconds: 1000),(){
+          context.read<BleScan>().scanStream.resume();
+        });
       }
     });
     getServerData();
