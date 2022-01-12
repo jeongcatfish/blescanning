@@ -31,14 +31,25 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
   Map my_map = {};
+  var bleScanTimeOut = 60 * 25;
+  var bleScanTime = 0;
 
   @override
   void initState() {
     super.initState();
+    Timer.periodic(new Duration(seconds: 1), (timer) {
+      setState(() {
+        bleScanTime +=1;
+      });
+      if(bleScanTime >= bleScanTimeOut){
+        bleScanTime = 0;
+        context.read<BleScan>().clearDeviceList();
+        context.read<BleScan>().startScan();
+      }
+    });
     getServerData();
     context.read<LocationVariable>().initData();
     Future.delayed(const Duration(milliseconds: 1000),(){
-      // context.read<BleScan>().setScanStarted();
       context.read<BleScan>().startScan();
     });
   }
@@ -75,7 +86,7 @@ class _HomePageState extends State<HomePage> {
       ],),
 
       backgroundColor: Colors.white,
-      body: [HomeView(),SettingView()][_selectedIndex],
+      body: [HomeView(bleScanTime : bleScanTime),SettingView()][_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
@@ -133,7 +144,9 @@ class _HomePageState extends State<HomePage> {
 }
 
 class HomeView extends StatelessWidget {
-  const HomeView({Key? key}) : super(key: key);
+  const HomeView({Key? key, this.bleScanTime}) : super(key: key);
+
+  final bleScanTime;
 
   @override
   Widget build(BuildContext context) {
@@ -147,7 +160,8 @@ class HomeView extends StatelessWidget {
                 style: TextStyle(fontSize: 30,fontWeight: FontWeight.bold),),
               Text("IsPaused : ${context.watch<BleScan>().IsScanPaused.toString()}",style: TextStyle(fontSize: 25,fontWeight: FontWeight.bold),),
               Text(context.watch<BleScan>().startTime.toString()),
-              Text(context.watch<BleScan>().endTime.toString())
+              Text(context.watch<BleScan>().endTime.toString()),
+              Text(bleScanTime.toString(),style: TextStyle(fontSize: 40,color: Colors.red),)
             ],
           ),
         ),

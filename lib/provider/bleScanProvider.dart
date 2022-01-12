@@ -7,6 +7,7 @@ import 'package:intl/intl.dart';
 
 class BleScan extends ChangeNotifier{
   List<BleDevice> deviceList = [];
+
   // Some state management stuff
   bool scanStarted = false;
   bool IsScanPaused = false;
