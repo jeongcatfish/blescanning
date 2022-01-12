@@ -31,7 +31,7 @@ class BleScan extends ChangeNotifier{
     notifyListeners();
   }
 
-  void startScan() async {
+  void startScan(scanFilterList) async {
     bool permGranted = false;
     // request Permission
     var status = await Permission.location.request().isGranted;
@@ -53,7 +53,14 @@ class BleScan extends ChangeNotifier{
             else{
               endTime = getTime();
             }
+            print(scanFilterList);
             scanList(device);
+            for(var scanFilter in scanFilterList){
+              print(scanFilter);
+              // if(device.name.contains(scanFilter.name)){
+              //
+              // }
+            }
       },
       onDone: (){
             print("ONDONE CALLED ONDONE CALLED ONDONE CALLED");
@@ -82,7 +89,7 @@ class BleScan extends ChangeNotifier{
       var name = "";
       if(device.name == "") name = "Unkouwn";
       else name = device.name;
-      deviceList.add(BleDevice(device.id.toString(), name, device.rssi));
+      deviceList.add(BleDevice(device.id.toString(), name, device.rssi,device.manufacturerData));
     }
     notifyListeners();
   }
@@ -94,5 +101,6 @@ class BleDevice{
   String macAddress = "";
   String name = "";
   int rssi =0;
-  BleDevice(this.macAddress,this.name,this.rssi);
+  var manufacturerData;
+  BleDevice(this.macAddress,this.name,this.rssi, this.manufacturerData);
 }

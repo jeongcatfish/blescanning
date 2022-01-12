@@ -6,6 +6,7 @@ class RequestServer extends ChangeNotifier{
   Map beaconMap = {};
   var workerBeaconDto;
   var beaconList;
+  var scanfilterList;
 
    getHttp() async {
     try {
@@ -22,6 +23,18 @@ class RequestServer extends ChangeNotifier{
        for(var data in response.data){
          beaconMap[data["beaconMac"]] = data["workerId"];
        }
+       notifyListeners();
+     } catch (e) {
+       print(e);
+     }
+   }
+
+   getScanFilterList() async{
+     try {
+       var response = await Dio().get("http://49.50.172.58:8080/api/filterList");
+       scanfilterList = response.data;
+       print(scanfilterList);
+       return scanfilterList;
        notifyListeners();
      } catch (e) {
        print(e);

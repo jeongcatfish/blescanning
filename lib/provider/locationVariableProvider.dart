@@ -4,26 +4,22 @@ class LocationVariable extends ChangeNotifier{
   int sectionIdx = 0;
   int placeIdx =0;
   int phoneIdx = 0;
-  var oldSectionIdx = 0;
-  var oldPlaceIdx =0;
-  var oldPhoneIdx = 0;
+  var oldSectionIdx;
+  var oldPlaceIdx;
+  var oldPhoneIdx;
 
   initData() async{
     var storage = await SharedPreferences.getInstance();
-    oldSectionIdx = (await storage.getInt("sectionIdx"))!;
-    oldPlaceIdx = (await storage.getInt("placeIdx"))!;
-    oldPhoneIdx = (await storage.getInt("phoneIdx"))!;
-    sectionIdx = oldSectionIdx;
-    placeIdx = oldPlaceIdx;
-    phoneIdx = oldPhoneIdx;
-    print("storage data   storage data    storage data   storage data");
+    if(sectionIdx != oldSectionIdx) oldSectionIdx = (await storage.getInt("sectionIdx"))!;
+    if(placeIdx != oldPlaceIdx) oldPlaceIdx = (await storage.getInt("placeIdx"))!;
+    if(phoneIdx != oldPhoneIdx) oldPhoneIdx = (await storage.getInt("phoneIdx"))!;
     notifyListeners();
   }
 
   setDataRight() {
-    sectionIdx = oldSectionIdx;
-    placeIdx = oldPlaceIdx;
-    phoneIdx = oldPhoneIdx;
+    if(sectionIdx != oldSectionIdx) sectionIdx = oldSectionIdx;
+    if(placeIdx != oldPlaceIdx) placeIdx = oldPlaceIdx;
+    if(phoneIdx != oldPhoneIdx) phoneIdx = oldPhoneIdx;
     notifyListeners();
   }
 

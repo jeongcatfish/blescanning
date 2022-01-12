@@ -43,25 +43,27 @@ class _HomePageState extends State<HomePage> {
       });
       if(bleScanTime >= bleScanTimeOut){
         bleScanTime = 0;
-        // context.read<BleScan>().clearDeviceList();
-        // context.read<BleScan>().startScan();
         context.read<BleScan>().scanStream.pause();
         Future.delayed(const Duration(milliseconds: 1000),(){
           context.read<BleScan>().scanStream.resume();
         });
       }
     });
-    getServerData();
     context.read<LocationVariable>().initData();
-    Future.delayed(const Duration(milliseconds: 1000),(){
-      context.read<BleScan>().startScan();
-    });
+    getServerDataAndStartBleScan();
+  }
+
+  getServerDataAndStartBleScan() async{
+    var scanFilterList = await getServerData();
+    context.read<BleScan>().startScan(scanFilterList);
   }
 
   getServerData() async{
     var beaconList= await context.read<RequestServer>().getHttp();
     await context.read<RequestServer>().getWorkerBeacon();
     await context.read<RequestServer>().getBeaconList();
+    var result = await context.read<RequestServer>().getScanFilterList();
+    return result;
   }
 
   void _onItemTapped(int index) {
@@ -139,7 +141,7 @@ class _HomePageState extends State<HomePage> {
       floatingActionButton: FloatingActionButton(
         onPressed: (){
           context.read<BleScan>().clearDeviceList();
-          context.read<BleScan>().startScan();
+          // context.read<BleScan>().startScan();
           },
         child: Icon(Icons.replay_outlined),
       ),
@@ -365,8 +367,8 @@ class BleListView extends StatelessWidget {
           child: ListTile(
             //디바이스 이름과 맥주소 그리고 신호 세기를 표시한다.
             leading: CircleAvatar(child: Icon(Icons.bluetooth),),
-            title: Text((index+1).toString()+"    " + context.watch<BleScan>().deviceList[index].name),
-            subtitle: Text(context.watch<BleScan>().deviceList[index].macAddress),
+            title: Text("[${(index+1)}] ${context.watch<BleScan>().deviceList[index].name} - ${context.watch<BleScan>().deviceList[index].macAddress}"),
+            subtitle: Text("${context.watch<BleScan>().deviceList[index].manufacturerData}",style: TextStyle(fontSize: 13),),
             trailing: Text("${context.watch<BleScan>().deviceList[index].rssi}"),
           ),
         );
