@@ -5,6 +5,7 @@ import 'package:blescanning/pages/NfcPage.dart';
 import 'package:blescanning/pages/QrCodeScanner.dart';
 import 'package:blescanning/pages/SecondPage.dart';
 import 'package:blescanning/provider/qrCodeScannerProvider.dart';
+import 'package:blescanning/util/ForeGroundService.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -20,6 +21,7 @@ void main() {
         ChangeNotifierProvider(create: (c) => LocationVariable()),
         ChangeNotifierProvider(create: (c) => RequestServer()),
         ChangeNotifierProvider(create: (c) => QrCodeScanner()),
+        ChangeNotifierProvider(create: (c) => ForeGroundService()),
       ],
         child: MaterialApp(home: HomePage())),
   );
@@ -41,6 +43,14 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
+
+    context.read<LocationVariable>().initData();
+    startForeGroundService();
+    turnOnAndOffBle();
+    getServerDataAndStartBleScan();
+  }
+
+  turnOnAndOffBle(){
     Timer.periodic(new Duration(seconds: 1), (timer) {
       setState(() {
         bleScanTime +=1;
@@ -53,8 +63,13 @@ class _HomePageState extends State<HomePage> {
         });
       }
     });
-    context.read<LocationVariable>().initData();
-    getServerDataAndStartBleScan();
+  }
+
+  startForeGroundService() async{
+    print("1111111111111111111111111111111111111111111111111111111111111");
+    await context.read<ForeGroundService>().initForegroundTask();
+    context.read<ForeGroundService>().startForegroundTask();
+    print("222222222222222222222222222222222222222222222222222222222222");
   }
 
   getServerDataAndStartBleScan() async{

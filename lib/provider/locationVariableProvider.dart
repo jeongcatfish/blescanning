@@ -4,9 +4,9 @@ class LocationVariable extends ChangeNotifier{
   int sectionIdx = 0;
   int placeIdx =0;
   int phoneIdx = 0;
-  var oldSectionIdx;
-  var oldPlaceIdx;
-  var oldPhoneIdx;
+  var oldSectionIdx = 0;
+  var oldPlaceIdx = 0;
+  var oldPhoneIdx = 0;
 
   initData() async{
     var storage = await SharedPreferences.getInstance();
