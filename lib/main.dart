@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io' show Platform;
 import 'package:blescanning/pages/BeaconListPage.dart';
+import 'package:blescanning/pages/NfcPage.dart';
 import 'package:blescanning/pages/QrCodeScanner.dart';
 import 'package:blescanning/pages/SecondPage.dart';
 import 'package:blescanning/provider/qrCodeScannerProvider.dart';
@@ -127,9 +128,15 @@ class _HomePageState extends State<HomePage> {
               child: Text('Drawer Header'),
             ),
             ListTile(
-              title: const Text('data'),
+              title: const Text('QR Code'),
               onTap: () {
                 Navigator.push(context,MaterialPageRoute(builder: (c)=>QrCodePage()));
+              },
+            ),
+            ListTile(
+              title: const Text('NFC'),
+              onTap: () {
+                Navigator.push(context,MaterialPageRoute(builder: (c)=>NfcPage()));
               },
             ),
             ListTile(
