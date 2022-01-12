@@ -1,7 +1,9 @@
 import 'dart:async';
 import 'dart:io' show Platform;
 import 'package:blescanning/pages/BeaconListPage.dart';
+import 'package:blescanning/pages/QrCodeScanner.dart';
 import 'package:blescanning/pages/SecondPage.dart';
+import 'package:blescanning/provider/qrCodeScannerProvider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -16,6 +18,7 @@ void main() {
         ChangeNotifierProvider(create: (c) => BleScan()),
         ChangeNotifierProvider(create: (c) => LocationVariable()),
         ChangeNotifierProvider(create: (c) => RequestServer()),
+        ChangeNotifierProvider(create: (c) => QrCodeScanner()),
       ],
         child: MaterialApp(home: HomePage())),
   );
@@ -126,7 +129,7 @@ class _HomePageState extends State<HomePage> {
             ListTile(
               title: const Text('data'),
               onTap: () {
-                Navigator.push(context,MaterialPageRoute(builder: (c)=>SecondPage()));
+                Navigator.push(context,MaterialPageRoute(builder: (c)=>QrCodePage()));
               },
             ),
             ListTile(

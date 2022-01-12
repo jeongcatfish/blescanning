@@ -53,13 +53,10 @@ class BleScan extends ChangeNotifier{
             else{
               endTime = getTime();
             }
-            print(scanFilterList);
-            scanList(device);
             for(var scanFilter in scanFilterList){
-              print(scanFilter);
-              // if(device.name.contains(scanFilter.name)){
-              //
-              // }
+              if(device.name.contains(scanFilter['name'])){
+                scanList(device);
+              }
             }
       },
       onDone: (){
