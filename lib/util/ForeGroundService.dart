@@ -1,7 +1,10 @@
 import 'dart:isolate';
-
+import 'package:blescanning/static/commonVariable.dart';
+import 'package:blescanning/util/GeolocatorService.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
+import 'package:blescanning/util/GeolocatorService.dart';
 
 class ForeGroundService extends ChangeNotifier{
 
@@ -46,23 +49,21 @@ class ForeGroundService extends ChangeNotifier{
     ReceivePort? receivePort;
     if (await FlutterForegroundTask.isRunningService) {
       receivePort = await FlutterForegroundTask.restartService();
-      print("QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ");
     } else {
       receivePort = await FlutterForegroundTask.startService(
         notificationTitle: 'Foreground Service is running',
         notificationText: 'Tap to return to the app',
         callback: startCallback,
       );
-      print("wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww");
     }
 
     if (receivePort != null) {
       _receivePort = receivePort;
       _receivePort?.listen((message) {
         if (message is DateTime) {
-          print('receive timestamp: $message');
+          // print('receive timestamp: $message');
         } else if (message is int) {
-          print('receive updateCount: $message');
+          // print('receive updateCount: $message');
         }
       });
 
@@ -80,9 +81,6 @@ class ForeGroundService extends ChangeNotifier{
 }
 
 void startCallback() {
-  print("kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk");
-  print("kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk");
-  print("kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk");
   // The setTaskHandler function must be called to handle the task in the background.
   FlutterForegroundTask.setTaskHandler(FirstTaskHandler());
 }
@@ -91,6 +89,8 @@ void updateCallback() {
 }
 class FirstTaskHandler extends TaskHandler {
   int updateCount = 0;
+  static String notificationTextString= "TASK";
+  static var geoPosition = Position(longitude: 2, latitude: 2, timestamp: DateTime.now(), accuracy: 0, altitude: 0, heading: 0, speed: 0, speedAccuracy: 0);
 
   @override
   Future<void> onStart(DateTime timestamp, SendPort? sendPort) async {
@@ -103,16 +103,16 @@ class FirstTaskHandler extends TaskHandler {
   @override
   Future<void> onEvent(DateTime timestamp, SendPort? sendPort) async {
     FlutterForegroundTask.updateService(
-      notificationTitle: 'Flutter Foreground',
-      notificationText: timestamp.toString(),
+      notificationTitle: 'FirstTaskHandler Foreground',
+      notificationText: "${notificationTextString}  ${updateCount}",
       // callback: updateCount >= 2 ? updateCallback : null
     );
 
     // Send data to the main isolate.
     sendPort?.send(timestamp);
     sendPort?.send(updateCount);
-
     updateCount++;
+    // geoPosition = await GeolocationService.getCurrentGeoPosition();
   }
 
   @override

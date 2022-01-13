@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'dart:io';
 import 'package:blescanning/pages/QrSecondPage.dart';
 import 'package:blescanning/provider/qrCodeScannerProvider.dart';
+import 'package:blescanning/static/commonVariable.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
@@ -178,6 +179,7 @@ class _QRViewExampleState extends State<QRViewExample> {
     controller.scannedDataStream.listen((scanData) {
       if(scanData.code == "http://115.85.183.167"){ //todo qrcode 데이터 받기
         if(!context.read<QrCodeScanner>().qrCodeScanned){
+          CommonVariable.name = "QRCODE";
           context.read<QrCodeScanner>().setQrCodeScannedTrue();
           Navigator.push(context,MaterialPageRoute(builder: (c)=>QrSecondPage()));
         }

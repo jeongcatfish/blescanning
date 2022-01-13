@@ -6,8 +6,8 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:intl/intl.dart';
 
 class BleScan extends ChangeNotifier{
+  static bool locationPermissionStatus = false;
   List<BleDevice> deviceList = [];
-
   // Some state management stuff
   bool scanStarted = false;
   bool IsScanPaused = false;
@@ -34,17 +34,18 @@ class BleScan extends ChangeNotifier{
   void startScan(scanFilterList) async {
     bool permGranted = false;
     // request Permission
-    var status = await Permission.location.request().isGranted;
-    if(status){
+    locationPermissionStatus = await Permission.location.request().isGranted;
+    if(locationPermissionStatus){
       permGranted = true;
     }
-    else if(!status){
+    else if(!locationPermissionStatus){
       print("PERMISSION DENIED");
     }
     // Main scanning logic happens here ⤵️
     if (permGranted) {
       scanStream = flutterReactiveBle
           .scanForDevices(withServices: [], scanMode: ScanMode.lowLatency).listen((device) {
+            // print(device);
             // print("mac : ${device.id} name : ${device.name}");
             if(!scanStarted){
               scanStarted = true;

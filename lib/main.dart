@@ -3,10 +3,12 @@ import 'dart:io' show Platform;
 import 'package:blescanning/pages/BeaconListPage.dart';
 import 'package:blescanning/pages/NfcPage.dart';
 import 'package:blescanning/pages/QrCodeScanner.dart';
-import 'package:blescanning/pages/SecondPage.dart';
 import 'package:blescanning/provider/qrCodeScannerProvider.dart';
+import 'package:blescanning/static/commonVariable.dart';
 import 'package:blescanning/util/ForeGroundService.dart';
+import 'package:blescanning/util/GeolocatorService.dart';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:provider/provider.dart';
 
 import 'package:blescanning/provider/bleScanProvider.dart';
@@ -14,6 +16,7 @@ import 'package:blescanning/provider/locationVariableProvider.dart';
 import 'package:blescanning/provider/requestServerProvider.dart';
 
 void main() {
+
   return runApp(
     MultiProvider(
       providers: [
@@ -45,9 +48,9 @@ class _HomePageState extends State<HomePage> {
     super.initState();
 
     context.read<LocationVariable>().initData();
-    startForeGroundService();
     turnOnAndOffBle();
     getServerDataAndStartBleScan();
+    // initForeGroundService();
   }
 
   turnOnAndOffBle(){
@@ -65,11 +68,9 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  startForeGroundService() async{
-    print("1111111111111111111111111111111111111111111111111111111111111");
+  initForeGroundService() async{
     await context.read<ForeGroundService>().initForegroundTask();
     context.read<ForeGroundService>().startForegroundTask();
-    print("222222222222222222222222222222222222222222222222222222222222");
   }
 
   getServerDataAndStartBleScan() async{
@@ -99,10 +100,10 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(title: Text("FLUTTER BLE SCANNER"),backgroundColor: Colors.green,
       actions: [
         IconButton(onPressed: (){
-          context.read<BleScan>().scanStream.pause();
-          }, icon: Icon(Icons.pause)),
+          context.read<ForeGroundService>().stopForegroundTask();
+          }, icon: Icon(Icons.stop)),
         IconButton(onPressed: (){
-          context.read<BleScan>().scanStream.resume();
+          initForeGroundService();
           }, icon: Icon(Icons.play_arrow)),
         IconButton(onPressed: (){
           print(context.read<BleScan>().scanStream.isPaused.toString());
@@ -165,13 +166,14 @@ class _HomePageState extends State<HomePage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: (){
-          context.read<BleScan>().clearDeviceList();
-          // context.read<BleScan>().startScan();
+          // context.read<BleScan>().clearDeviceList();
+          FirstTaskHandler.notificationTextString = "floating edited";
           },
         child: Icon(Icons.replay_outlined),
       ),
     );
   }
+
 }
 
 class HomeView extends StatelessWidget {
@@ -189,10 +191,6 @@ class HomeView extends StatelessWidget {
             children: [
               Text("TOTAL COUNT : ${context.watch<BleScan>().deviceList.length.toString()}",
                 style: TextStyle(fontSize: 30,fontWeight: FontWeight.bold),),
-              Text("IsPaused : ${context.watch<BleScan>().IsScanPaused.toString()}",style: TextStyle(fontSize: 25,fontWeight: FontWeight.bold),),
-              Text(context.watch<BleScan>().startTime.toString()),
-              Text(context.watch<BleScan>().endTime.toString()),
-              Text(bleScanTime.toString(),style: TextStyle(fontSize: 40,color: Colors.red),)
             ],
           ),
         ),
@@ -226,7 +224,11 @@ class SettingView extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 ElevatedButton(
-                  onPressed: () {context.read<LocationVariable>().minus1SectionIdx();},
+                  onPressed: () {
+                    context.read<LocationVariable>().minus1SectionIdx();
+                    CommonVariable.name = "setting";
+                    print("setting : ${CommonVariable.name}");
+                  },
                   child: Icon(Icons.exposure_minus_1, color: Colors.white),
                   style: ElevatedButton.styleFrom(
                     shape: CircleBorder(),
