@@ -1,72 +1,32 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_nfc_reader/flutter_nfc_reader.dart';
-class NfcPage extends StatelessWidget {
+import 'package:nfc_manager/nfc_manager.dart';
+
+class NfcPage extends StatefulWidget {
   const NfcPage({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Material App',
-      home: Scaffold(
-        appBar: AppBar(
-          title: Text('Material App Bar'),
-        ),
-        body: Center(child: NfcScan()),
-      ),
-    );
-  }
+  _NfcPageState createState() => _NfcPageState();
 }
 
-class NfcScan extends StatefulWidget {
-  NfcScan({Key? key}) : super(key: key);
+class _NfcPageState extends State<NfcPage> {
 
   @override
-  _NfcScanState createState() => _NfcScanState();
-}
-
-class _NfcScanState extends State<NfcScan> {
-  TextEditingController writerController = TextEditingController();
-
-  @override
-  initState() {
+  void initState() {
+    // TODO: implement initState
     super.initState();
-    writerController.text = 'Flutter NFC Scan';
-    FlutterNfcReader.onTagDiscovered().listen((onData) {
-      print(onData.id);
-      print(onData.content);
+    _tagRead();
+  }
+  void _tagRead() {
+    NfcManager.instance.startSession(onDiscovered: (NfcTag tag) async {
+      print("result : ${tag.data}");
+      NfcManager.instance.stopSession();
     });
   }
 
   @override
-  void dispose() {
-    // Clean up the controller when the widget is removed from the
-    // widget tree.
-    writerController.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return Column(
-      children: <Widget>[
-        TextField(
-          controller: writerController,
-        ),
-        RaisedButton(
-          onPressed: () {
-            FlutterNfcReader.read();
-          },
-          child: Text("Read"),
-        ),
-        RaisedButton(
-          onPressed: () {
-            FlutterNfcReader.write(" ", writerController.text).then((value) {
-              print(value.content);
-            });
-          },
-          child: Text("Write"),
-        )
-      ],
+    return Scaffold(
+      appBar: AppBar(title: Text("nfc tag!"),),
     );
   }
 }

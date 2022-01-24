@@ -104,15 +104,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.4"
-  flutter_nfc_reader:
-    dependency: "direct main"
-    description:
-      path: "."
-      ref: master
-      resolved-ref: "9300cd447de35dae535b59bd96a64e420da64c0e"
-      url: "git://github.com/matteocrippa/flutter-nfc-reader.git"
-    source: git
-    version: "0.2.0"
   flutter_reactive_ble:
     dependency: "direct main"
     description:
@@ -221,6 +212,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.0"
+  nfc_manager:
+    dependency: "direct main"
+    description:
+      name: nfc_manager
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "3.1.0"
   path:
     dependency: transitive
     description:

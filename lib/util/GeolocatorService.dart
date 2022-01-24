@@ -14,7 +14,6 @@ class GeolocationService{
 
   static Future<Position> getCurrentGeoPosition() async {
     if(BleScan.locationPermissionStatus){
-      print("hey");
       final position = await _geolocatorPlatform.getCurrentPosition();
       geoPosition = position;
       return position;
