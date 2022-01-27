@@ -3,25 +3,41 @@ import 'dart:io' show Platform;
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:blescanning/provider/bleScanProvider.dart';
+import 'package:get/get.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 
-class GeolocationService{
+class GeolocationService extends GetxController{
 
-  static var geoPosition= Position(longitude: 10, latitude: 20, timestamp: DateTime.now(), accuracy: 0, altitude: 0, heading: 0, speed: 0, speedAccuracy: 0);
+  void getLocationPermission() async{
+    locationPermissionStatus = await Permission.location.request().isGranted;
+  }
 
-  static final GeolocatorPlatform _geolocatorPlatform = GeolocatorPlatform.instance;
-  static late bool _serviceEnabled;
+  var locationPermissionStatus;
+  var geoPosition= Position(longitude: 10, latitude: 20, timestamp: DateTime.now(), accuracy: 0, altitude: 0, heading: 0, speed: 0, speedAccuracy: 0);
 
-  static Future<Position> getCurrentGeoPosition() async {
-    if(BleScan.locationPermissionStatus){
+  final GeolocatorPlatform _geolocatorPlatform = GeolocatorPlatform.instance;
+  late bool _serviceEnabled;
+
+  Future<Position> getCurrentGeoPosition() async {
+    try{
       final position = await _geolocatorPlatform.getCurrentPosition();
       geoPosition = position;
+      print("in GeoLoc : ${geoPosition}");
       return position;
     }
-    else if(!BleScan.locationPermissionStatus){
-      print("There is no location permission : ${BleScan.locationPermissionStatus}");
-      return Position(longitude: 0, latitude: 0, timestamp: DateTime.now(), accuracy: 0, altitude: 0, heading: 0, speed: 0, speedAccuracy: 0);
+    catch(e){
+      return Position(longitude: 9, latitude: 9, timestamp: DateTime.now(), accuracy: 0, altitude: 0, heading: 0, speed: 0, speedAccuracy: 0);
     }
-    return Position(longitude: 0, latitude: 0, timestamp: DateTime.now(), accuracy: 0, altitude: 0, heading: 0, speed: 0, speedAccuracy: 0);
+    // if(BleScan.locationPermissionStatus){
+    //   final position = await _geolocatorPlatform.getCurrentPosition();
+    //   geoPosition = position;
+    //   return position;
+    // }
+    // else if(!BleScan.locationPermissionStatus){
+    //   print("There is no location permission : ${BleScan.locationPermissionStatus}");
+    //   return Position(longitude: 0, latitude: 0, timestamp: DateTime.now(), accuracy: 0, altitude: 0, heading: 0, speed: 0, speedAccuracy: 0);
+    // }
+    // return Position(longitude: 0, latitude: 0, timestamp: DateTime.now(), accuracy: 0, altitude: 0, heading: 0, speed: 0, speedAccuracy: 0);
   }
 }

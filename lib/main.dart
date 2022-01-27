@@ -9,6 +9,8 @@ import 'package:blescanning/util/ForeGroundService.dart';
 import 'package:blescanning/util/GeolocatorService.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:get/get.dart';
+import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:provider/provider.dart';
 
 import 'package:blescanning/provider/bleScanProvider.dart';
@@ -24,9 +26,8 @@ void main() {
         ChangeNotifierProvider(create: (c) => LocationVariable()),
         ChangeNotifierProvider(create: (c) => RequestServer()),
         ChangeNotifierProvider(create: (c) => QrCodeScanner()),
-        ChangeNotifierProvider(create: (c) => ForeGroundService()),
       ],
-        child: MaterialApp(home: HomePage())),
+        child: GetMaterialApp(home: HomePage())),
   );
 }
 
@@ -38,6 +39,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  var foreGroundTaskController = Get.put(ForeGroundService());
   int _selectedIndex = 0;
   Map my_map = {};
   var bleScanTimeOut = 60 * 25;
@@ -67,12 +69,13 @@ class _HomePageState extends State<HomePage> {
           context.read<BleScan>().startScan(scanFilterList);
         });
       }
+      Get.put(GeolocationService().getCurrentGeoPosition());
     });
   }
 
   initForeGroundService() async{
-    await context.read<ForeGroundService>().initForegroundTask();
-    context.read<ForeGroundService>().startForegroundTask();
+    await foreGroundTaskController.initForegroundTask();
+    foreGroundTaskController.startForegroundTask();
   }
 
   getServerDataAndStartBleScan() async{
@@ -103,14 +106,10 @@ class _HomePageState extends State<HomePage> {
       actions: [
         IconButton(onPressed: (){
           // context.read<ForeGroundService>().stopForegroundTask();
-          context.read<BleScan>().scanStream.pause();
-          print(context.read<BleScan>().scanStream.isPaused.toString());
+          foreGroundTaskController.stopForegroundTask();
           }, icon: Icon(Icons.stop)),
         IconButton(onPressed: (){
-          // initForeGroundService();
-          var scanFilterList = [];
-          context.read<BleScan>().startScan(scanFilterList);
-          print(context.read<BleScan>().scanStream.isPaused.toString());
+          initForeGroundService();
           }, icon: Icon(Icons.play_arrow)),
         IconButton(onPressed: (){
           print(context.read<BleScan>().scanStream.isPaused.toString());
@@ -129,7 +128,6 @@ class _HomePageState extends State<HomePage> {
           BottomNavigationBarItem(
             icon: Icon(Icons.settings),
             label: 'settings',
-
           ),
         ],
         currentIndex: _selectedIndex,
@@ -174,7 +172,6 @@ class _HomePageState extends State<HomePage> {
       floatingActionButton: FloatingActionButton(
         onPressed: (){
           // context.read<BleScan>().clearDeviceList();
-          FirstTaskHandler.notificationTextString = "floating edited";
           },
         child: Icon(Icons.replay_outlined),
       ),

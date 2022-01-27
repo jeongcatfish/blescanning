@@ -1,12 +1,12 @@
 import 'dart:isolate';
-import 'package:blescanning/static/commonVariable.dart';
 import 'package:blescanning/util/GeolocatorService.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 import 'package:blescanning/util/GeolocatorService.dart';
+import 'package:get/get.dart';
 
-class ForeGroundService extends ChangeNotifier{
+class ForeGroundService extends GetxController{
 
   ReceivePort? _receivePort;
 
@@ -89,8 +89,7 @@ void updateCallback() {
 }
 class FirstTaskHandler extends TaskHandler {
   int updateCount = 0;
-  static String notificationTextString= "TASK";
-  static var geoPosition = Position(longitude: 2, latitude: 2, timestamp: DateTime.now(), accuracy: 0, altitude: 0, heading: 0, speed: 0, speedAccuracy: 0);
+  late Position geoPosition = Position(longitude: 10, latitude: 20, timestamp: DateTime.now(), accuracy: 0, altitude: 0, heading: 0, speed: 0, speedAccuracy: 0);
 
   @override
   Future<void> onStart(DateTime timestamp, SendPort? sendPort) async {
@@ -104,15 +103,13 @@ class FirstTaskHandler extends TaskHandler {
   Future<void> onEvent(DateTime timestamp, SendPort? sendPort) async {
     FlutterForegroundTask.updateService(
       notificationTitle: 'FirstTaskHandler Foreground',
-      notificationText: "${notificationTextString}  ${updateCount}",
+      notificationText: "gg ${Get.find<GeolocationService>().geoPosition}",
       // callback: updateCount >= 2 ? updateCallback : null
     );
 
     // Send data to the main isolate.
     sendPort?.send(timestamp);
-    sendPort?.send(updateCount);
-    updateCount++;
-    // geoPosition = await GeolocationService.getCurrentGeoPosition();
+    print("in onStart ${Get.find<GeolocationService>().geoPosition}");
   }
 
   @override

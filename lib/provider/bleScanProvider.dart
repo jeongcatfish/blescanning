@@ -6,7 +6,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:intl/intl.dart';
 
 class BleScan extends ChangeNotifier{
-  static bool locationPermissionStatus = false;
+  bool locationPermissionStatus = false;
   List<BleDevice> deviceList = [];
   // Some state management stuff
   bool scanStarted = false;
@@ -45,7 +45,7 @@ class BleScan extends ChangeNotifier{
     if (permGranted) {
       scanStream = flutterReactiveBle
           .scanForDevices(withServices: [], scanMode: ScanMode.lowLatency).listen((device) {
-            debugPrint(device.toString());
+            // debugPrint(device.toString());
             // print("mac : ${device.id} name : ${device.name}");
             if(!scanStarted){
               scanStarted = true;
