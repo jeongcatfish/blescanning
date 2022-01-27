@@ -45,7 +45,7 @@ class BleScan extends ChangeNotifier{
     if (permGranted) {
       scanStream = flutterReactiveBle
           .scanForDevices(withServices: [], scanMode: ScanMode.lowLatency).listen((device) {
-            // print(device);
+            debugPrint(device.toString());
             // print("mac : ${device.id} name : ${device.name}");
             if(!scanStarted){
               scanStarted = true;
@@ -54,11 +54,12 @@ class BleScan extends ChangeNotifier{
             else{
               endTime = getTime();
             }
-            for(var scanFilter in scanFilterList){
-              if(device.name.contains(scanFilter['name'])){
-                scanList(device);
-              }
-            }
+            // for(var scanFilter in scanFilterList){
+            //   if(device.name.contains(scanFilter['name'])){
+            //     scanList(device);
+            //   }
+            // }
+            scanList(device);
       },
       onDone: (){
             print("ONDONE CALLED ONDONE CALLED ONDONE CALLED");

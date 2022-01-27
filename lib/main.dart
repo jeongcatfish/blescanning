@@ -60,9 +60,11 @@ class _HomePageState extends State<HomePage> {
       });
       if(bleScanTime >= bleScanTimeOut){
         bleScanTime = 0;
-        context.read<BleScan>().scanStream.pause();
+        context.read<BleScan>().clearDeviceList();
         Future.delayed(const Duration(milliseconds: 1000),(){
-          context.read<BleScan>().scanStream.resume();
+          // context.read<BleScan>().scanStream.resume();
+          var scanFilterList = [];
+          context.read<BleScan>().startScan(scanFilterList);
         });
       }
     });
@@ -100,10 +102,15 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(title: Text("FLUTTER BLE SCANNER"),backgroundColor: Colors.green,
       actions: [
         IconButton(onPressed: (){
-          context.read<ForeGroundService>().stopForegroundTask();
+          // context.read<ForeGroundService>().stopForegroundTask();
+          context.read<BleScan>().scanStream.pause();
+          print(context.read<BleScan>().scanStream.isPaused.toString());
           }, icon: Icon(Icons.stop)),
         IconButton(onPressed: (){
-          initForeGroundService();
+          // initForeGroundService();
+          var scanFilterList = [];
+          context.read<BleScan>().startScan(scanFilterList);
+          print(context.read<BleScan>().scanStream.isPaused.toString());
           }, icon: Icon(Icons.play_arrow)),
         IconButton(onPressed: (){
           print(context.read<BleScan>().scanStream.isPaused.toString());
@@ -191,6 +198,7 @@ class HomeView extends StatelessWidget {
             children: [
               Text("TOTAL COUNT : ${context.watch<BleScan>().deviceList.length.toString()}",
                 style: TextStyle(fontSize: 30,fontWeight: FontWeight.bold),),
+              Text("${bleScanTime.toString()}   ${60 * 25}")
             ],
           ),
         ),
