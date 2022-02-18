@@ -2,10 +2,11 @@ import 'dart:async';
 import 'dart:io' show Platform;
 import 'package:flutter/material.dart';
 import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
+import 'package:get/get.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:intl/intl.dart';
 
-class BleScan extends ChangeNotifier{
+class BleScan extends GetxController{
   bool locationPermissionStatus = false;
   List<BleDevice> deviceList = [];
   // Some state management stuff
@@ -19,16 +20,16 @@ class BleScan extends ChangeNotifier{
   final Uuid serviceUuid = Uuid.parse("75C276C3-8F97-20BC-A143-B354244886D4");
   setScanStarted(){
     scanStarted = !scanStarted;
-    notifyListeners();
+    update();
   }
   clearDeviceList(){
     deviceList.clear();
-    notifyListeners();
+    update();
   }
 
   setIsScanPaused(status){
     IsScanPaused = status;
-    notifyListeners();
+    update();
   }
 
   void startScan(scanFilterList) async {
@@ -90,7 +91,7 @@ class BleScan extends ChangeNotifier{
       else name = device.name;
       deviceList.add(BleDevice(device.id.toString(), name, device.rssi,device.manufacturerData));
     }
-    notifyListeners();
+    update();
   }
 }
 

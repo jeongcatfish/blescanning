@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-class LocationVariable extends ChangeNotifier{
+class LocationVariable extends GetxController{
   int sectionIdx = 0;
   int placeIdx =0;
   int phoneIdx = 0;
@@ -13,14 +14,14 @@ class LocationVariable extends ChangeNotifier{
     if(sectionIdx != oldSectionIdx) oldSectionIdx = (await storage.getInt("sectionIdx"))!;
     if(placeIdx != oldPlaceIdx) oldPlaceIdx = (await storage.getInt("placeIdx"))!;
     if(phoneIdx != oldPhoneIdx) oldPhoneIdx = (await storage.getInt("phoneIdx"))!;
-    notifyListeners();
+    update();
   }
 
   setDataRight() {
     if(sectionIdx != oldSectionIdx) sectionIdx = oldSectionIdx;
     if(placeIdx != oldPlaceIdx) placeIdx = oldPlaceIdx;
     if(phoneIdx != oldPhoneIdx) phoneIdx = oldPhoneIdx;
-    notifyListeners();
+    update();
   }
 
   setStorageData() async{
@@ -33,29 +34,29 @@ class LocationVariable extends ChangeNotifier{
 
   plus1PhoneIdx(){
     phoneIdx++;
-    notifyListeners();
+    update();
   }
 
   minus1PhoneIdx(){
     phoneIdx--;
-    notifyListeners();
+    update();
   }
   plus1PlaceIdx(){
     placeIdx++;
-    notifyListeners();
+    update();
   }
 
   minus1PlaceIdx(){
     placeIdx--;
-    notifyListeners();
+    update();
   }
   plus1SectionIdx(){
     sectionIdx++;
-    notifyListeners();
+    update();
   }
 
   minus1SectionIdx(){
     sectionIdx--;
-    notifyListeners();
+    update();
   }
 }
